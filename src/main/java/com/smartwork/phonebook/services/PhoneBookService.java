@@ -33,6 +33,7 @@ public class PhoneBookService {
     }
 
     public void createPhoneEntry(PhoneEntry entry) {
+        entry.setId(UUID.randomUUID());
         phoneBookRepository.create(entry);
     }
 

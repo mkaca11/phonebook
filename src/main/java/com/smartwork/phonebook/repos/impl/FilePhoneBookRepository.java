@@ -5,11 +5,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.smartwork.phonebook.models.PhoneEntry;
 import com.smartwork.phonebook.repos.PhoneBookRepository;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.ResourceUtils;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -21,12 +18,6 @@ import java.util.stream.Collectors;
 public class FilePhoneBookRepository implements PhoneBookRepository {
 
     private List<PhoneEntry> data = new ArrayList<>();
-    private final ResourceLoader resourceLoader;
-
-    public FilePhoneBookRepository(ResourceLoader resourceLoader) {
-        this.resourceLoader = resourceLoader;
-    }
-
 
     private void loadData() {
         try {
@@ -35,9 +26,9 @@ public class FilePhoneBookRepository implements PhoneBookRepository {
             File resource = new File("C:\\smartworkapp\\data\\phonebook.json");
             if (resource.exists()) {
                 Gson gson = new Gson();
-                data = gson.fromJson(new FileReader(resource),
-                        new TypeToken<List<PhoneEntry>>() {
-                        }.getType());
+                data = gson.fromJson(
+                        new FileReader(resource),
+                        new TypeToken<List<PhoneEntry>>() {}.getType());
             }
         } catch (IOException e) {
             System.out.println("Error getting data");
@@ -64,7 +55,7 @@ public class FilePhoneBookRepository implements PhoneBookRepository {
     @Override
     public PhoneEntry getPhoneEntry(UUID id) {
         loadData();
-        return data.stream().filter(it -> it.getId() == id).findAny().orElse(null);
+        return data.stream().filter(it -> it.getId().equals(id)).findAny().orElse(null);
     }
 
     @Override
@@ -89,7 +80,6 @@ public class FilePhoneBookRepository implements PhoneBookRepository {
                 } else if (by.equals("lastName")) {
                     return e2.getLastName().compareTo(e1.getLastName());
                 }
-
             }
             return 0;
         }).collect(Collectors.toList());
@@ -106,14 +96,12 @@ public class FilePhoneBookRepository implements PhoneBookRepository {
     public void edit(UUID id, PhoneEntry entry) {
         loadData();
         data.forEach(record -> {
-            if (record.getId() == id) {
-                if (record.getId() == id) {
+                if (record.getId().equals(id)) {
                     record.setFirstName(entry.getFirstName());
                     record.setLastName(entry.getLastName());
                     record.setNumber(entry.getNumber());
                     record.setType(entry.getType());
                 }
-            }
         });
         saveData();
     }
@@ -121,7 +109,7 @@ public class FilePhoneBookRepository implements PhoneBookRepository {
     @Override
     public void delete(UUID id) {
         loadData();
-        data.removeIf(record -> record.getId() == id);
+        data.removeIf(record -> record.getId().equals(id));
         saveData();
     }
 }

@@ -3,7 +3,7 @@ package com.smartwork.phonebook.models;
 import java.util.UUID;
 
 public class PhoneEntry {
-    private UUID id=UUID.randomUUID();
+    private UUID id;
     private String firstName;
     private String lastName;
     private PhoneType type;
@@ -11,6 +11,10 @@ public class PhoneEntry {
 
     public UUID getId() {
         return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public String getFirstName() {
@@ -44,5 +48,6 @@ public class PhoneEntry {
     public void setNumber(String number) {
         this.number = number;
     }
+
 }
 
